@@ -1,11 +1,11 @@
 import { defineConfig } from 'vitepress'
 
-// GitHub Pages 项目站： https://<user>.github.io/<repo>/
-// 若使用用户站（仓库名为 <user>.github.io），将 base 改为 '/'，hostname 改为 https://<user>.github.io
+// 自定义域名：根路径为 https://docs.pxjsyl.top/
+// 本地/CI 可通过环境变量覆盖：VITEPRESS_BASE、VITEPRESS_HOSTNAME
 const GITHUB_USER = 'XJPeng12'
 const GITHUB_REPO = 'my-learn-opencode'
-const base = process.env.VITEPRESS_BASE ?? `/${GITHUB_REPO}/`
-const hostname = (process.env.VITEPRESS_HOSTNAME ?? `https://${GITHUB_USER}.github.io${base}`).replace(/\/$/, '')
+const base = process.env.VITEPRESS_BASE ?? '/'
+const hostname = (process.env.VITEPRESS_HOSTNAME ?? 'https://docs.pxjsyl.top').replace(/\/$/, '')
 
 const abs = (path: string) => `${hostname}${path.startsWith('/') ? path : `/${path}`}`
 
