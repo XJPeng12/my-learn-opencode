@@ -1,5 +1,14 @@
 import { defineConfig } from 'vitepress'
 
+// GitHub Pages 项目站： https://<user>.github.io/<repo>/
+// 若使用用户站（仓库名为 <user>.github.io），将 base 改为 '/'，hostname 改为 https://<user>.github.io
+const GITHUB_USER = 'XJPeng12'
+const GITHUB_REPO = 'my-learn-opencode'
+const base = process.env.VITEPRESS_BASE ?? `/${GITHUB_REPO}/`
+const hostname = (process.env.VITEPRESS_HOSTNAME ?? `https://${GITHUB_USER}.github.io${base}`).replace(/\/$/, '')
+
+const abs = (path: string) => `${hostname}${path.startsWith('/') ? path : `/${path}`}`
+
 // 页面路径判断：是否为英文版
 const isEnglishPage = (relativePath: string) => relativePath.startsWith('en/')
 
@@ -18,6 +27,8 @@ const noHreflangPages = [
 ]
 
 export default defineConfig({
+  base,
+
   title: 'OpenCode 中文教程',
   titleTemplate: ':title - AI 编程助手实战指南',
   description: 'OpenCode 是终端 AI 编程助手，本教程从零基础到进阶，教你用 AI 写代码、改 Bug、自动化办公。支持智谱、DeepSeek 等国产模型，完全免费开源。',
@@ -28,7 +39,7 @@ export default defineConfig({
 
   // 站点地图（多语言支持）
   sitemap: {
-    hostname: 'https://learnopencode.com',
+    hostname,
     transformItems(items) {
       return items.map(item => ({
         ...item,
@@ -53,7 +64,7 @@ export default defineConfig({
     ['meta', { property: 'og:site_name', content: 'OpenCode 中文教程' }],
     ['meta', { property: 'og:title', content: 'OpenCode 中文教程 - AI 编程助手实战指南' }],
     ['meta', { property: 'og:description', content: 'OpenCode 是终端 AI 编程助手，本教程从零基础到进阶，教你用 AI 写代码、改 Bug、自动化办公。支持智谱、DeepSeek 等国产模型，完全免费开源。' }],
-    ['meta', { property: 'og:image', content: 'https://learnopencode.com/og-image.png' }],
+    ['meta', { property: 'og:image', content: abs('/og-image.png') }],
     ['meta', { property: 'og:image:width', content: '1200' }],
     ['meta', { property: 'og:image:height', content: '630' }],
 
@@ -61,7 +72,7 @@ export default defineConfig({
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
     ['meta', { name: 'twitter:title', content: 'OpenCode 中文教程 - AI 编程助手实战指南' }],
     ['meta', { name: 'twitter:description', content: 'OpenCode 是终端 AI 编程助手，本教程从零基础到进阶，教你用 AI 写代码、改 Bug、自动化办公。' }],
-    ['meta', { name: 'twitter:image', content: 'https://learnopencode.com/og-image.png' }],
+    ['meta', { name: 'twitter:image', content: abs('/og-image.png') }],
 
     // 结构化数据 JSON-LD（中文版）
     ['script', { type: 'application/ld+json' }, JSON.stringify({
@@ -69,7 +80,7 @@ export default defineConfig({
       "@type": "WebSite",
       "name": "OpenCode 中文教程",
       "alternateName": "OpenCode 中文实战课",
-      "url": "https://learnopencode.com",
+      "url": hostname,
       "description": "OpenCode 是终端 AI 编程助手，本教程从零基础到进阶，教你用 AI 写代码、改 Bug、自动化办公。",
       "inLanguage": "zh-CN",
       "publisher": {
@@ -77,29 +88,10 @@ export default defineConfig({
         "name": "OpenCode 中文社区",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://learnopencode.com/logo.svg"
+          "url": abs('/logo.svg')
         }
       }
     })],
-
-    // Google AdSense
-    ['script', {
-      async: 'true',
-      src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1238777311285568',
-      crossorigin: 'anonymous'
-    }],
-
-    // Google Analytics
-    ['script', { async: 'true', src: 'https://www.googletagmanager.com/gtag/js?id=G-1R6TQGK2HZ' }],
-    ['script', {}, `
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-1R6TQGK2HZ');
-    `],
-
-    // Baidu Analytics（仅中文版加载，通过 transformHead 控制）
   ],
 
   transformHead({ pageData }) {
@@ -107,7 +99,7 @@ export default defineConfig({
     const relativePath = pageData.relativePath
     
     // Canonical URL
-    const canonicalUrl = `https://learnopencode.com/${relativePath}`
+    const canonicalUrl = abs(`/${relativePath}`)
       .replace(/index\.md$/, '')
       .replace(/\.md$/, '.html')
     
@@ -125,7 +117,7 @@ export default defineConfig({
         "@type": "WebSite",
         "name": "OpenCode Tutorial",
         "alternateName": "OpenCode Practical Guide",
-        "url": "https://learnopencode.com/en/",
+        "url": abs('/en/'),
         "description": "OpenCode is a terminal-based AI coding assistant. This tutorial covers everything from basics to advanced usage.",
         "inLanguage": "en-US",
         "publisher": {
@@ -133,7 +125,7 @@ export default defineConfig({
           "name": "OpenCode Community",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://learnopencode.com/logo.svg"
+            "url": abs('/logo.svg')
           }
         }
       })])
@@ -151,8 +143,8 @@ export default defineConfig({
     // hreflang 标签（不对等的页面不加）
     if (!noHreflangPages.includes(relativePath)) {
       const basePath = relativePath.replace(/^en\//, '').replace(/\.md$/, '')
-      const zhUrl = `https://learnopencode.com/${basePath}`
-      const enUrl = `https://learnopencode.com/en/${basePath}`
+      const zhUrl = abs(`/${basePath}`)
+      const enUrl = abs(`/en/${basePath}`)
       
       head.push(['link', { rel: 'alternate', hreflang: 'zh-CN', href: zhUrl }])
       head.push(['link', { rel: 'alternate', hreflang: 'en', href: enUrl }])
@@ -573,7 +565,7 @@ export default defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vbgate/learn-opencode' },
+      { icon: 'github', link: `https://github.com/${GITHUB_USER}/${GITHUB_REPO}` },
     ],
 
     footer: {
@@ -625,7 +617,7 @@ export default defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/vbgate/learn-opencode/edit/main/docs/:path',
+      pattern: `https://github.com/${GITHUB_USER}/${GITHUB_REPO}/edit/main/docs/:path`,
       text: '在 GitHub 上编辑此页',
     },
   },
@@ -1035,7 +1027,7 @@ export default defineConfig({
           text: 'Last updated',
         },
         editLink: {
-          pattern: 'https://github.com/vbgate/learn-opencode/edit/main/docs/:path',
+          pattern: `https://github.com/${GITHUB_USER}/${GITHUB_REPO}/edit/main/docs/:path`,
           text: 'Edit this page on GitHub',
         },
       }

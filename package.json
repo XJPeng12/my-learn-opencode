@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "bash scripts/stats.sh && vitepress dev docs",
     "build": "bash scripts/stats.sh && vitepress build docs",
+    "build:pages": "vitepress build docs",
     "preview": "vitepress preview docs"
   },
   "keywords": [
